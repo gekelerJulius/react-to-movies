@@ -1,0 +1,23 @@
+
+.genre-list {
+    max-height: 5em;
+    padding: 0.5em;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+.genre-item {
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    cursor: pointer;
+    font-size: smaller;
+    user-select: none;
+}
+
+.active {
+    background-color: #ccc;
+    color: black;
+}

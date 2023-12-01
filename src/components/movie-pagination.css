@@ -1,0 +1,25 @@
+
+.movie-grid-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & > * {
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+    }
+
+    .active-page {
+        color: dodgerblue;
+    }
+}
+
+.no-bullets {
+    list-style-type: none;
+}
