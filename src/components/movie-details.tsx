@@ -9,10 +9,11 @@ interface MovieDetailsProps {
   updateDetailMovieInfo: (movieInfo: MovieInfo | undefined) => void;
 }
 
-let videoElement: YouTubePlayer | null = null;
+let musicVideoElement: YouTubePlayer | null = null;
+let trailerVideoElement: YouTubePlayer | null = null;
 
 class MovieDetails extends Component<MovieDetailsProps> {
-  state: { music_video_id: string; playing: boolean };
+  state: { music_video_id: string; trailer_video_id: string };
   playerOpts: { playerVars: { autoplay: 0 | 1 | undefined }; width: string; height: string } = {
     height: '390',
     width: '640',
@@ -23,16 +24,7 @@ class MovieDetails extends Component<MovieDetailsProps> {
   };
   constructor(props: MovieDetailsProps) {
     super(props);
-    this.state = { music_video_id: '', playing: false };
-  }
-
-  async componentDidMount(): Promise<void> {
-    setInterval(async () => {
-      if (videoElement) {
-        const state = await videoElement.getPlayerState();
-        this.setState({ ...this.state, playing: state === 1 });
-      }
-    }, 200);
+    this.state = { music_video_id: '', trailer_video_id: '' };
   }
 
   async componentDidUpdate(
@@ -42,11 +34,12 @@ class MovieDetails extends Component<MovieDetailsProps> {
   ): Promise<void> {
     if (!this.props.movieInfo && prevProps.movieInfo !== this.props.movieInfo) {
       // Stop the video if the movieInfo is undefined
-      this.setState({ ...this.state, music_video_id: '' });
+      this.setState({ music_video_id: '', trailer_video_id: '' });
     }
     if (this.props.movieInfo && prevProps.movieInfo !== this.props.movieInfo) {
-      const vidId = await YoutubeService.search(this.props.movieInfo.title + ' song');
-      this.setState({ ...this.state, music_video_id: vidId });
+      const musicVidId = await YoutubeService.search(this.props.movieInfo.title + ' song');
+      const trailerVidId = await YoutubeService.search(this.props.movieInfo.title + ' trailer');
+      this.setState({ ...this.state, music_video_id: musicVidId, trailer_video_id: trailerVidId });
     }
   }
 
@@ -58,44 +51,45 @@ class MovieDetails extends Component<MovieDetailsProps> {
       >
         <div className="movie-grid-item-detail-title opaque-background">{this.props.movieInfo?.title}</div>
 
-        {this.state.music_video_id ? (
-          <>
-            <YouTube
-              videoId={this.state.music_video_id} // defaults -> ''
-              className={'movie-grid-item-detail-video'}
-              opts={this.playerOpts}
-              onReady={(event) => {
-                videoElement = event.target;
-                videoElement?.playVideo();
-              }}
-            />
-            <div
-              className="music-video-control-button"
-              onClick={(event) => {
-                event.stopPropagation();
-                if (videoElement) {
-                  if (this.state.playing) {
-                    videoElement?.pauseVideo();
-                    this.setState({ ...this.state, playing: false });
-                  } else {
-                    videoElement?.playVideo();
-                    this.setState({ ...this.state, playing: true });
-                  }
-                }
-              }}
-            >
-              {this.state.playing ? 'Pause' : 'Play'}
-            </div>
-          </>
-        ) : (
-          <div></div>
-        )}
+        <div className={'poster-videos-flex'}>
+          {this.state.music_video_id ? (
+            <>
+              <YouTube
+                videoId={this.state.music_video_id} // defaults -> ''
+                className={'movie-grid-item-detail-music-video'}
+                opts={this.playerOpts}
+                onReady={(event) => {
+                  musicVideoElement = event.target;
+                  musicVideoElement?.playVideo();
+                }}
+              />
+            </>
+          ) : (
+            <div></div>
+          )}
 
-        <img
-          className="movie-grid-item-detail-image"
-          src={this.props.movieInfo ? `https://image.tmdb.org/t/p/w500${this.props.movieInfo.poster_path}` : ''}
-          alt={this.props.movieInfo?.title}
-        />
+          <img
+            className="movie-grid-item-detail-image"
+            src={this.props.movieInfo ? `https://image.tmdb.org/t/p/w500${this.props.movieInfo.poster_path}` : ''}
+            alt={this.props.movieInfo?.title}
+          />
+
+          {this.state.trailer_video_id ? (
+            <>
+              <YouTube
+                videoId={this.state.trailer_video_id} // defaults -> ''
+                className={'movie-grid-item-detail-trailer-video'}
+                opts={this.playerOpts}
+                onReady={(event) => {
+                  trailerVideoElement = event.target;
+                  trailerVideoElement?.stopVideo();
+                }}
+              />
+            </>
+          ) : (
+            <div></div>
+          )}
+        </div>
         <div className="movie-grid-item-detail-description opaque-background">{this.props.movieInfo?.overview}</div>
       </div>
     );

@@ -1,6 +1,6 @@
 
 .movie-grid-item-detail {
-    position: absolute;
+    position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
@@ -12,25 +12,19 @@
     color: #fff;
 }
 
-.movie-grid-item-detail-video {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    pointer-events: auto;
-    visibility: hidden;
+.poster-videos-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.music-video-control-button {
-    position: absolute;
-    z-index: 3;
-    top: 0;
-    right: 0;
-    padding: 1rem;
-    box-sizing: border-box;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    cursor: pointer;
+.movie-grid-item-detail-music-video {
+    pointer-events: auto;
+}
+
+.movie-grid-item-detail-trailer-video {
+    pointer-events: auto;
 }
 
 .inactive {
