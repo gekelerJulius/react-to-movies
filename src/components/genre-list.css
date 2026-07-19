@@ -1,23 +1,36 @@
-
 .genre-list {
-    max-height: 5em;
-    padding: 0.5em;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 0.5em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.5rem;
+  max-width: 100%;
 }
 
 .genre-item {
-    border: 1px solid #ccc;
-    border-radius: 0.5em;
-    cursor: pointer;
-    font-size: smaller;
-    user-select: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition);
+  letter-spacing: 0.01em;
 }
 
-.active {
-    background-color: #ccc;
-    color: black;
+.genre-item:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+.genre-item.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--border-hover);
 }

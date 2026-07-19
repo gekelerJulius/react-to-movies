@@ -1,4 +1,12 @@
-import { MovieInfo } from '../types/movie-info';
+import {
+  MovieInfo,
+  CastMember,
+  CrewMember,
+  Keyword,
+  Video,
+  Review,
+  WatchProviders,
+} from '../types/movie-info';
 import { Genre } from '../types/genre';
 import { DiscoverResults } from '../types/discover-results';
 
@@ -15,6 +23,25 @@ export interface MovieDiscoverOptions {
   maxRatingCount?: number;
   withGenres?: number[];
   page?: number;
+  sort_by?: string;
+  primary_language?: string;
+  with_runtime?: number;
+}
+
+export interface MovieSearchOptions {
+  query?: string;
+  page?: number;
+  include_adult?: boolean;
+  include_video?: boolean;
+}
+
+export interface TrendingOptions {
+  period?: 'day' | 'week' | 'month' | 'year';
+  page?: number;
+}
+
+export interface MovieDetailsOptions {
+  append_to_response?: string;
 }
 
 function getDefaultMovieDiscoverOptions(): MovieDiscoverOptions {
@@ -27,6 +54,9 @@ function getDefaultMovieDiscoverOptions(): MovieDiscoverOptions {
     maxRatingCount: undefined,
     withGenres: undefined,
     page: 1,
+    sort_by: 'popularity.desc',
+    primary_language: undefined,
+    with_runtime: undefined,
   };
 }
 
@@ -38,8 +68,82 @@ export class MovieService {
     return res.genres;
   }
 
-  static async getInfo(): Promise<MovieInfo> {
-    const url: string = apiUrlPre + 'movie/11?api_key=' + API_KEY;
+  static async getInfo(movieId: number = 1): Promise<MovieInfo> {
+    const url = `${apiUrlPre}movie/${movieId}?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    return await response.json();
+  }
+
+  static async getMovieDetails(
+    movieId: number,
+    options: MovieDetailsOptions = {}
+  ): Promise<MovieInfo> {
+    const { append_to_response = '' } = options;
+    const url = `${apiUrlPre}movie/${movieId}?api_key=${API_KEY}${append_to_response ? `&append_to_response=${append_to_response}` : ''}`;
+    const response: Response = await fetch(url);
+    return await response.json();
+  }
+
+  static async getCast(movieId: number): Promise<CastMember[]> {
+    const url = `${apiUrlPre}movie/${movieId}/credits?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    const res = await response.json();
+    return res.cast;
+  }
+
+  static async getCrew(movieId: number): Promise<CrewMember[]> {
+    const url = `${apiUrlPre}movie/${movieId}/credits?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    const res = await response.json();
+    return res.crew;
+  }
+
+  static async getKeywords(movieId: number): Promise<Keyword[]> {
+    const url = `${apiUrlPre}movie/${movieId}/keywords?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    const res = await response.json();
+    return res.keywords;
+  }
+
+  static async getVideos(movieId: number): Promise<Video[]> {
+    const url = `${apiUrlPre}movie/${movieId}/videos?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    const res = await response.json();
+    return res.results;
+  }
+
+  static async getReviews(movieId: number): Promise<Review[]> {
+    const url = `${apiUrlPre}movie/${movieId}/reviews?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    const res = await response.json();
+    return res.results;
+  }
+
+  static async getWatchProviders(movieId: number): Promise<WatchProviders> {
+    const url = `${apiUrlPre}movie/${movieId}/watch/providers?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    return await response.json();
+  }
+
+  static async getSimilarMovies(movieId: number): Promise<DiscoverResults> {
+    const url = `${apiUrlPre}movie/${movieId}/similar?api_key=${API_KEY}`;
+    const response: Response = await fetch(url);
+    return await response.json();
+  }
+
+  static async searchMovies(options: MovieSearchOptions = {}): Promise<DiscoverResults> {
+    const { query = '', page = 1, include_adult = false, include_video = false } = options;
+    let url = `${apiUrlPre}search/movie?api_key=${API_KEY}&language=en-US&page=${page}`;
+    if (query) url += `&query=${encodeURIComponent(query)}`;
+    if (include_adult) url += `&include_adult=true`;
+    if (include_video) url += `&include_video=true`;
+    const response: Response = await fetch(url);
+    return await response.json();
+  }
+
+  static async getTrendingMovies(options: TrendingOptions = {}): Promise<DiscoverResults> {
+    const { period = 'week', page = 1 } = options;
+    const url = `${apiUrlPre}trending/movie/${period}?api_key=${API_KEY}&page=${page}`;
     const response: Response = await fetch(url);
     return await response.json();
   }
@@ -55,6 +159,9 @@ export class MovieService {
       maxRatingCount,
       withGenres,
       page,
+      sort_by,
+      primary_language,
+      with_runtime,
     }: MovieDiscoverOptions = options;
     let url: string = `${apiUrlPre}discover/movie?api_key=${API_KEY}&language=en-US`;
     if (minReleaseDate) {
@@ -80,6 +187,15 @@ export class MovieService {
     }
     if (page) {
       url += `&page=${page}`;
+    }
+    if (sort_by) {
+      url += `&sort_by=${sort_by}`;
+    }
+    if (primary_language) {
+      url += `&primary_language=${primary_language}`;
+    }
+    if (with_runtime) {
+      url += `&with_runtime=${with_runtime}`;
     }
     return url;
   }

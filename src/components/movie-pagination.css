@@ -1,25 +1,43 @@
-
 .movie-grid-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    & > * {
-        cursor: pointer;
-        padding: 0.5rem 1rem;
-    }
-
-    .active-page {
-        color: dodgerblue;
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 3rem;
+  padding: 1rem;
 }
 
-.no-bullets {
-    list-style-type: none;
+.pagination li {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: all var(--transition);
+  user-select: none;
+}
+
+.pagination li:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border-color: var(--border);
+}
+
+.pagination li.active-page {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--border-hover);
+}
+
+.pagination li.no-bullets {
+  list-style-type: none;
 }
